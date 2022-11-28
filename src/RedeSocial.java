@@ -6,11 +6,11 @@ public class RedeSocial {
     static final String[][] INITIAL_MENU = {{"1", "Cadastrar-se"}, {"2", "Entrar"}, {"3", "Fechar"}};
     static final String[][] USER_MENU = {{"1", "Postar"}, {"2", "Timeline"}, {"3", "Acessar Menu dos Seguidores"}, {"4", "Sair"}};
     static final String[][] FOLLOWER_MENU = {{"1", "Timeline dos usuários"},{"2", "Seguir um usuário"}, {"3", "Visualizar quem você segue"}, {"4", "Visualizar seguidores"}, {"5", "Retornar ao Menu do Usuário"}};
-    static String MenuOption = "";
+    static String menuOption = "";
     static Profile[] profiles = new Profile[100];
-    static int UserID;
+    static int userID;
     static int profileCounter = 0;
-    static int InfluencerID = 0;
+    static int influencerID = 0;
 
     public static void main(String[] args) {
         printInitialMenu();
@@ -32,10 +32,10 @@ public class RedeSocial {
     }
     static String readMenuOption()  {
         System.out.print("Opção: ");
-        return MenuOption = scan.nextLine();
+        return menuOption = scan.nextLine();
     }
     static void getInitialMenuAction() {
-        switch (MenuOption) {
+        switch (menuOption) {
             case "1":
                 registerUser();
                 break;
@@ -80,8 +80,7 @@ public class RedeSocial {
     static String readUserRegistryData (String dataType) {
         String article = (dataType.equals("senha")) ? "a" : "o";
         System.out.printf("Digite %s %s: ", article, dataType);
-        String registeredUserData = scan.nextLine();
-        return registeredUserData;
+        return scan.nextLine();
     }
 
     static boolean isLoginUnique(String userLogin) {
@@ -123,7 +122,7 @@ public class RedeSocial {
             printInitialMenu();
         }
     }
-    static int findUser() throws UserNotFoundException{
+    static void findUser() throws UserNotFoundException{
         boolean isLogin = false;
         String entryLogin = readUserRegistryData("login");
         entryLogin = entryLogin.toUpperCase();
@@ -131,7 +130,7 @@ public class RedeSocial {
         for (int i = 0; i < profileCounter; i++) {
             if (entryLogin.equals(profiles[i].login)) {
                 isLogin = true;
-                UserID = i;
+                userID = i;
                 break;
             }
         }
@@ -139,31 +138,29 @@ public class RedeSocial {
         if (!isLogin) {
             throw new UserNotFoundException();
         }
-
-        return UserID;
     }
     static void isPasswordCorrect() throws InvalidPasswordException{
         String entryPassword = readUserRegistryData("senha");
 
-        if (!profiles[UserID].password.equals(entryPassword)) {
+        if (!profiles[userID].password.equals(entryPassword)) {
             throw new InvalidPasswordException();
         }
     }
     static void printUserMenu() {
-        System.out.printf("\n----MENU DO USUÁRIO - Bem-vindo(a), %s!\n", profiles[UserID].name);
+        System.out.printf("\n----MENU DO USUÁRIO - Bem-vindo(a), %s!\n", profiles[userID].name);
         printMenuOptions(USER_MENU);
         readMenuOption();
         getUserMenuAction();
     }
     static void getUserMenuAction() {
-        switch (MenuOption) {
+        switch (menuOption) {
             case "1":
                 post();
                 printUserMenu();
                 break;
             case "2":
-                System.out.printf("\nSua Timeline, %s:\n", profiles[UserID].name);
-                profiles[UserID].getOwnTimeline();
+                System.out.printf("\nSua Timeline, %s:\n", profiles[userID].name);
+                profiles[userID].getOwnTimeline();
                 printUserMenu();
                 break;
             case "3":
@@ -182,7 +179,7 @@ public class RedeSocial {
         String date = readDate();
         String hour = readHour();
         String comment = readComment();
-        profiles[UserID].post(date, hour, comment);
+        profiles[userID].post(date, hour, comment);
         System.out.println("Post realizado com sucesso!");
     }
     static String readDate() {
@@ -223,7 +220,7 @@ public class RedeSocial {
         getFollowerMenuAction();
     }
     static void getFollowerMenuAction() {
-        switch (MenuOption) {
+        switch (menuOption) {
             case "1":
                 getInfluencerTimeline();
                 printFollowerMenu();
@@ -256,7 +253,7 @@ public class RedeSocial {
             scan.nextLine();
             addInfluencerToUser();
             addUserToInfluencer();
-            System.out.printf("Usuário %s seguido com sucesso!\n", profiles[InfluencerID].name);
+            System.out.printf("Usuário %s seguido com sucesso!\n", profiles[influencerID].name);
         }
     }
     static boolean isFirstUser() {
@@ -272,7 +269,7 @@ public class RedeSocial {
         System.out.format(format, " Id do Usuário ", " Nome do Usuário ");
 
         for (int i = 0; i < profileCounter; i++) {
-            if (i != UserID) {
+            if (i != userID) {
                 System.out.printf("%14s | %s\n", i, profiles[i].name);
             }
         }
@@ -281,52 +278,52 @@ public class RedeSocial {
         System.out.print("ID do Usuário: ");
 
         try {
-            InfluencerID = scan.nextInt();
+            influencerID = scan.nextInt();
 
         } catch (InputMismatchException e) {
             System.out.println("Por favor, insira uma ID de usuário válida.");
             scan.nextLine();
-            InfluencerID = readInfluencer();
+            influencerID = readInfluencer();
         }
 
-        if (InfluencerID >= profileCounter || InfluencerID < 0 || InfluencerID == UserID ) {
+        if (influencerID >= profileCounter || influencerID < 0 || influencerID == userID) {
             System.out.println("Usuário não existe. Por favor, escolha novamente.");
             scan.nextLine();
-            InfluencerID = readInfluencer();
+            influencerID = readInfluencer();
         }
 
-        return InfluencerID;
+        return influencerID;
     }
     static void addInfluencerToUser() {
-        int index = profiles[UserID].influencerCount;
-        profiles[UserID].influencers[index] = profiles[InfluencerID].name;
-        profiles[UserID].influencerCount++;
+        int index = profiles[userID].influencerCount;
+        profiles[userID].influencers[index] = profiles[influencerID].name;
+        profiles[userID].influencerCount++;
     }
     static void addUserToInfluencer() {
-        int index = profiles[InfluencerID].followersCount;
-        profiles[InfluencerID].followers[index] = profiles[UserID].name;
-        profiles[InfluencerID].followersCount++;
+        int index = profiles[influencerID].followersCount;
+        profiles[influencerID].followers[index] = profiles[userID].name;
+        profiles[influencerID].followersCount++;
     }
     static void printInfluencersFollowedByUser() {
         System.out.println("Lista de usuários que eu sigo:");
 
-        if (profiles[UserID].influencerCount == 0) {
+        if (profiles[userID].influencerCount == 0) {
             System.out.println("Você ainda não segue ninguém.");
         }
 
-        for (int i = 0; i < profiles[UserID].influencerCount; i++) {
-            System.out.println(profiles[UserID].influencers[i]);
+        for (int i = 0; i < profiles[userID].influencerCount; i++) {
+            System.out.println(profiles[userID].influencers[i]);
         }
     }
     static void printUsersThatFollowInfluencer() {
         System.out.println("Lista de usuários que me seguem:");
 
-        if (profiles[UserID].followersCount == 0) {
+        if (profiles[userID].followersCount == 0) {
             System.out.println("Você ainda não tem seguidores.");
         }
 
-        for (int i = 0; i < profiles[UserID].followersCount; i++) {
-            System.out.println(profiles[UserID].followers[i]);
+        for (int i = 0; i < profiles[userID].followersCount; i++) {
+            System.out.println(profiles[userID].followers[i]);
         }
     }
     static void getInfluencerTimeline() {
@@ -335,8 +332,8 @@ public class RedeSocial {
             showUsersList();
             readInfluencer();
             scan.nextLine();
-            System.out.printf("\nExibindo a Timeline do(a) %s\n", profiles[InfluencerID].name);
-            profiles[InfluencerID].getInfluencerTimeline();
+            System.out.printf("\nExibindo a Timeline do(a) %s\n", profiles[influencerID].name);
+            profiles[influencerID].getInfluencerTimeline();
         }
     }
 }
