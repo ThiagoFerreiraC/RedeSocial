@@ -54,12 +54,10 @@ public class RedeSocial {
         System.out.println("\n----TELA DE CADASTRO");
         Profile user = new Profile();
         user.name = readUserRegistryData("nome");
-        user.login = readUserRegistryData("login");
-        user.login = user.login.toUpperCase();
 
-        if (!isLoginUnique(user.login)) {
-            printInitialMenu();
-        }
+        do {
+            user.login = readUserRegistryData("login").toUpperCase();
+        } while (!isLoginUnique(user.login));
 
         user.password = readUserRegistryData("senha");
 
@@ -73,7 +71,6 @@ public class RedeSocial {
             printInitialMenu();
         }
     }
-
     static void printWelcomeRegistryMessage(String userName) {
         System.out.printf("Bem-vindo(a), %s! Agora escolha a opção entrar para que você possa aproveitar o Exemplário.\n", userName);
     }
@@ -82,7 +79,6 @@ public class RedeSocial {
         System.out.printf("Digite %s %s: ", article, dataType);
         return scan.nextLine();
     }
-
     static boolean isLoginUnique(String userLogin) {
         for (int i = 0; i < profileCounter; i++) {
             if (userLogin.equals(profiles[i].login)) {
@@ -123,19 +119,18 @@ public class RedeSocial {
         }
     }
     static void findUser() throws UserNotFoundException{
-        boolean isLogin = false;
-        String entryLogin = readUserRegistryData("login");
-        entryLogin = entryLogin.toUpperCase();
+        boolean isLoginFound = false;
+        String entryLogin = readUserRegistryData("login").toUpperCase();
 
         for (int i = 0; i < profileCounter; i++) {
             if (entryLogin.equals(profiles[i].login)) {
-                isLogin = true;
+                isLoginFound = true;
                 userID = i;
                 break;
             }
         }
 
-        if (!isLogin) {
+        if (!isLoginFound) {
             throw new UserNotFoundException();
         }
     }
